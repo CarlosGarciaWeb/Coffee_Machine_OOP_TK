@@ -1,6 +1,7 @@
+from pkgutil import iter_modules
 import tkinter as tk
 from tkinter import *
-from tkinter.messagebox import showwarning
+from tkinter.messagebox import showinfo, showwarning
 from turtle import bgcolor
 from purchase import Prices
 
@@ -76,28 +77,62 @@ class GuiEnvironment():
         try:
             selection = self.var.get()
             price = purchase_method.items_machine[selection]
-            text_test = f'The price for {selection} is ${price}'
-            self.confirm_purchase_screen(text_test)
+            confirmation_purchase_text = f'The price for {selection} is ${price}'
+            self.confirm_purchase_screen(confirmation_purchase_text, selection, float(price))
         except:
             showwarning('Invalid option', message='Please Select a product')
             
 
 
 
-    def confirm_purchase_screen(self, selected_item_text):
+    def confirm_purchase_screen(self, selected_item_text, product_item, item_price):
         purchase_window = Toplevel(self.window, bg=BG_Softbrown, pady=25, padx=25)
         purchase_window.title('Purchase Screen')
-        purchase_window.geometry('500x200')
-        Label(purchase_window, text=f'This is the purchase confirmation screen. {selected_item_text}', bg=BG_Softbrown, pady=25).pack()
+        purchase_window.geometry('700x300')
+        label_purchase_window = Label(purchase_window, text=f'{selected_item_text}\nPlease insert money below.', bg=BG_Softbrown, pady=25, font=(FONT, 20, 'bold'))
+
+        text_purchase_window = Text(purchase_window, font=(FONT, 25, 'bold'), height=1, width=16, pady=5)
 
         def exit_screen():
-                    purchase_window.destroy()
-                    purchase_window.update()
+            purchase_window.destroy()
+            purchase_window.update()
 
 
-        exit_button = Button(purchase_window, text='Cancel', bg='#F96666', highlightthickness=0, command=exit_screen)
+        def purchase_product(product_item, item_price):
+            input_value = text_purchase_window.get("1.0", "end-1c")
+            is_digit = check_amount(input_value)
+            if is_digit:
+                if float(input_value) < 0:
+                    showwarning('Invalid input', message='Invalid input')
+                elif float(input_value) < item_price:
+                    showwarning('Insufficient cash', message=f'The amount deposited is not enough. You are short by ${item_price - float(input_value)}')
+                else:
+                    purchase_method.add_to_bought(product_item)
+                    if float(input_value) == item_price:
+                        showinfo('Thank you', message=f'Thank you for your purchase, enjoy your {product_item}. :)')
+                    else:
+                        showinfo('Thank you', message=f'Thank you for your purchase, enjoy your {product_item}.\nYour change is ${float(input_value) - item_price}.\n:)')
+                    exit_screen()
+            else:
+                showwarning('Invalid input' , message='Please put amount required for purchase')
+
+        purchase_button = Button(purchase_window, text='Buy', bg='#ADDDD0', highlightthickness=0, command= lambda: purchase_product(product_item, item_price), height=2, width=10, relief='flat', borderwidth=5)
+        exit_button = Button(purchase_window, text='Cancel', bg='#F96666', highlightthickness=0, command=exit_screen, height=2, width=10, relief='flat', borderwidth=5)
+        
+        label_purchase_window.pack()
+        text_purchase_window.pack()
+        purchase_button.pack()
         exit_button.pack()
 
+
+
+
+def check_amount(input_amount):
+    try:
+        value = float(input_amount)
+        return True
+    except ValueError:
+        return False
         
 
 
