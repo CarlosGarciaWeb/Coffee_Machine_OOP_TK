@@ -1,8 +1,7 @@
-from select import select
 import tkinter as tk
 from tkinter import *
-from tokenize import String
-from turtle import width
+from tkinter.messagebox import showwarning
+from turtle import bgcolor
 from purchase import Prices
 
 
@@ -53,24 +52,59 @@ class GuiEnvironment():
         resource_window_button = Button(text='Resources', highlightthickness=0, command=None, font=(FONT, 24, 'bold'), fg=BG_Button, width=25)
         resource_window_button.grid(column=0, row=4)
 
-        coffee_button = Radiobutton(text='Coffee', highlightthickness=0,  font=(FONT, 24, 'bold'), fg=BG_Button, bg=BG_Softbrown, variable= self.var, value='Coffee')
-        coffee_button.grid(column=1, row=0)
-        flat_white_button = Radiobutton(text='Flat White', highlightthickness=0,  font=(FONT, 25, 'bold'), fg=BG_Button, bg=BG_Softbrown, variable= self.var, value='Flat White')
-        flat_white_button.grid(column=1, row=1)
-        cappucino_button = Radiobutton(text='Cappucino', highlightthickness=0,  font=(FONT, 25, 'bold'), fg=BG_Button, bg=BG_Softbrown, variable= self.var, value='Cappucino')
-        cappucino_button.grid(column=1, row=2)
-        moccacino_button = Radiobutton(text='Moccacino', highlightthickness=0,  font=(FONT, 25, 'bold'), fg=BG_Button, bg=BG_Softbrown, variable= self.var, value='Moccacino')
-        moccacino_button.grid(column=1, row=3)
+
         buy_button = Button(text='Buy', highlightthickness=0, command=self.select_item, font=(FONT, 25, 'bold'), fg=BG_Button, bg=BG_Softbrown)
-        buy_button.grid(column=1, row=4)       
+        buy_button.grid(column=1, row=4)
 
 
+            
+
+        row_counter = 0
+
+        for name, price in purchase_method.items_machine.items():
+            product_button = Radiobutton(text=f'{name} - ${price}', highlightthickness=0, font=(FONT, 24, 'bold'), fg=BG_Button, bg=BG_Softbrown, variable=self.var, value=name)   
+            product_button.grid(column=1, row=row_counter)
+            row_counter += 1    
+
+        self.var.set(str(list(purchase_method.items_machine.values())[0]))
+
+
+        # Any window that opens must be behind this line of code
         self.window.mainloop()
 
     def select_item(self):
-        selection = self.var.get()
-        price = purchase_method.items[selection]
-        print(f'The price for {selection} is {price}')
+        try:
+            selection = self.var.get()
+            price = purchase_method.items_machine[selection]
+            text_test = f'The price for {selection} is ${price}'
+            self.confirm_purchase_screen(text_test)
+        except:
+            showwarning('Invalid option', message='Please Select a product')
+            
+
+
+
+    def confirm_purchase_screen(self, selected_item_text):
+        purchase_window = Toplevel(self.window, bg=BG_Softbrown, pady=25, padx=25)
+        purchase_window.title('Purchase Screen')
+        purchase_window.geometry('500x200')
+        Label(purchase_window, text=f'This is the purchase confirmation screen. {selected_item_text}', bg=BG_Softbrown, pady=25).pack()
+
+        def exit_screen():
+                    purchase_window.destroy()
+                    purchase_window.update()
+
+
+        exit_button = Button(purchase_window, text='Cancel', bg='#F96666', highlightthickness=0, command=exit_screen)
+        exit_button.pack()
+
+        
+
+
+
+
+
+
 
 
         
