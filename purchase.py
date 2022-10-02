@@ -1,13 +1,18 @@
 import datetime
+import json
+import os
 
-class Prices():
+class Resources():
 
     def __init__(self):
-        self.coffee = 2.50
-        self.flat_wite = 3.25
-        self.cappucino = 3.00
-        self.moccacino = 3.50
-        self.items_machine = {'Coffee':self.coffee, 'Flat White': self.flat_wite, 'Cappucino': self.cappucino, 'Moccacino': self.moccacino}
+        self.coffee = {'Price': 2.50, 'Water': 5, 'Milk': 0, 'Coffee Beans': 15}
+        self.flat_wite = {'Price': 3.25, 'Water': 2.5, 'Milk': 2.5, 'Coffee Beans': 15}
+        self.cappucino = {'Price': 3.00, 'Water': 3.0, 'Milk': 2.0, 'Coffee Beans': 15}
+        self.moccacino = {'Price': 3.50, 'Water': 3.0, 'Milk': 2.0, 'Coffee Beans': 7.5, 'Cocoa': 7.5}
+        self.items_machine = {'Coffee':self.coffee['Price'], 'Flat White': self.flat_wite['Price'], 'Cappucino': self.cappucino['Price'], 'Moccacino': self.moccacino['Price']}
+        self.resources = {'Water': 0, 'Milk': 0, 'Coffee Beans': 0, 'Cocoa': 0, 'Cash': 0}
+        self.increments = {k: v for k, v in self.resources.items()}
+        self.res_limit = {k: v for k, v in self.resources.items()}
         self.cash = 0
         self.items_bought = {key: 0 for key, _ in self.items_machine.items()}
         self.date = datetime.datetime.today()
@@ -22,6 +27,43 @@ class Prices():
         price_product = self.items_machine[key]
         self.cash += price_product
         print(self.cash)
+
+    def view_resources(self):
+        self.establish_limit_increments()
+        if not os.path.exists('resource.json'):
+            with open('resource.json', 'w') as json_file_output:
+                json.dump(self.resources, json_file_output)
+        else:
+            with open('resource.json') as json_file_output:
+                self.resources = json.load(json_file_output)
+        return self.resources
+
+
+    def add_resource(self, resource):
+        pass
+
+        
+
+    def establish_limit_increments(self):
+        for k in self.increments.keys():
+            if k == 'Water' or k =='Milk':
+                self.increments[k] = 10
+            elif k == 'Coffee Beans' or k == 'Cocoa':
+                self.increments[k] = 5
+            else:
+                self.increments[k] = 10
+        for k in self.increments.keys():
+            if k == 'Water' or k =='Milk':
+                self.increments[k] = 20
+            elif k == 'Coffee Beans' or k == 'Cocoa':
+                self.increments[k] = 30
+            else:
+                self.increments[k] = 100        
+        
+
+    
+    def dec_resource(self, resource):
+        pass
 
 
 

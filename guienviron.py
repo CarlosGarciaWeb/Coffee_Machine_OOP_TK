@@ -1,14 +1,12 @@
-from pkgutil import iter_modules
 import tkinter as tk
 from tkinter import *
 from tkinter.messagebox import showinfo, showwarning
-from turtle import bgcolor
-from purchase import Prices
+from purchase import Resources
 
 
 # purchase section
 
-purchase_method = Prices()
+purchase_method = Resources()
 
 
 #Colors
@@ -17,6 +15,9 @@ BG_Softbrown = '#DFD3C3'
 BG_Button = '#472D2D'
 
 Text_color = '#2C3639'
+
+green_button = '#ADDDD0'
+red_button = '#F96666'
 
 FONT = 'Courier'
 
@@ -50,7 +51,7 @@ class GuiEnvironment():
 
         # See resources screen
 
-        resource_window_button = Button(text='Resources', highlightthickness=0, command=None, font=(FONT, 24, 'bold'), fg=BG_Button, width=25)
+        resource_window_button = Button(text='Resources', highlightthickness=0, command=self.resource_screen, font=(FONT, 24, 'bold'), fg=BG_Button, width=25)
         resource_window_button.grid(column=0, row=4)
 
 
@@ -81,7 +82,46 @@ class GuiEnvironment():
             self.confirm_purchase_screen(confirmation_purchase_text, selection, float(price))
         except:
             showwarning('Invalid option', message='Please Select a product')
+
+
+
+
+    def resource_screen(self):
+        available_resources = purchase_method.view_resources()
+        resource_window = Toplevel(self.window, bg=BG_Softbrown, padx=25, pady=25)
+        resource_window.title('Resources')
+        resource_window.geometry('1250x400')
+        col_variation = 1
+        row_val = 1
+        row_key = 2
+        button_resource_row = 3
+        button_resource_col_add = 1
+        button_resource_col_dec = 2
+        for resource_key, resource_value in available_resources.items():
+            if resource_key == 'Water' or resource_key == 'Milk':
+                resource_label_value = Label(resource_window, text=f'{resource_value} ml', font=(FONT, 24, 'bold'), bg=BG_Softbrown, pady=15, padx=35)
+            elif resource_key == 'Coffee Beans' or resource_key == 'Cocoa':
+                
+                resource_label_value = Label(resource_window, text=f'{resource_value} gr', font=(FONT, 24, 'bold'), bg=BG_Softbrown, pady=15, padx=35)
+            else:
+                resource_label_value = Label(resource_window, text=f'${resource_value}', font=(FONT, 24, 'bold'), bg=BG_Softbrown, pady=15, padx=35)
+            if len(resource_key.split()) == 2:
+                resource_label_key = Label(resource_window, text=resource_key.split()[0], font=(FONT, 24, 'bold'), bg=BG_Softbrown, padx=35, pady=15)
+            else:
+                resource_label_key = Label(resource_window, text=resource_key, font=(FONT, 24, 'bold'), bg=BG_Softbrown, padx=35, pady=15)
+            resource_label_value.grid(column=col_variation, row=row_val, columnspan=2)
             
+            resource_label_key.grid(column=col_variation, row=row_key, columnspan=2)
+            col_variation += 2
+            add_button = Button(resource_window, text='+', font=(FONT, 32, 'bold'), bg=green_button)
+            decrease_button = Button(resource_window, text='-', font=(FONT, 32, 'bold'), bg=red_button)
+            add_button.grid(row=button_resource_row, column=button_resource_col_add)
+            decrease_button.grid(row=button_resource_row, column=button_resource_col_dec)
+            button_resource_col_add, button_resource_col_dec = button_resource_col_add + 2, button_resource_col_dec + 2
+
+
+
+        
 
 
 
@@ -116,8 +156,8 @@ class GuiEnvironment():
             else:
                 showwarning('Invalid input' , message='Please put amount required for purchase')
 
-        purchase_button = Button(purchase_window, text='Buy', bg='#ADDDD0', highlightthickness=0, command= lambda: purchase_product(product_item, item_price), height=2, width=10, relief='flat', borderwidth=5)
-        exit_button = Button(purchase_window, text='Cancel', bg='#F96666', highlightthickness=0, command=exit_screen, height=2, width=10, relief='flat', borderwidth=5)
+        purchase_button = Button(purchase_window, text='Buy', bg=green_button, highlightthickness=0, command= lambda: purchase_product(product_item, item_price), height=2, width=10, relief='flat', borderwidth=5)
+        exit_button = Button(purchase_window, text='Cancel', bg=red_button, highlightthickness=0, command=exit_screen, height=2, width=10, relief='flat', borderwidth=5)
         
         label_purchase_window.pack()
         text_purchase_window.pack()
