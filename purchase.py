@@ -39,8 +39,11 @@ class Resources():
         return self.resources
 
 
-    def add_resource(self, resource):
-        pass
+    def add_resource(self, resource, qty):
+        data_resources = self.view_resources()
+        data_resources[resource] += qty
+        with open('resource.json', 'w') as jsonfile:
+            json.dump(data_resources, jsonfile)
 
         
 
