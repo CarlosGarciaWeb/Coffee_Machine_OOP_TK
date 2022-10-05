@@ -91,7 +91,7 @@ class GuiEnvironment():
         available_resources = purchase_method.view_resources()
         resource_window = Toplevel(self.window, bg=BG_Softbrown, padx=25, pady=25)
         resource_window.title('Resources')
-        resource_window.geometry('1250x400')
+        resource_window.geometry('1000x400')
         col_variation = 1
         row_val = 1
         row_key = 2
@@ -101,7 +101,7 @@ class GuiEnvironment():
         # for resource_key, resource_value in available_resources.items():
         #     if resource_key == 'Water' or resource_key == 'Milk':
         #         resource_label_value = Label(resource_window, text=f'{resource_value} ml', font=(FONT, 24, 'bold'), bg=BG_Softbrown, pady=15, padx=35)
-        #     elif resource_key == 'Coffee Beans' or resource_key == 'Cocoa':
+        #     elif resource_key == 'Coffee' or resource_key == 'Cocoa':
                 
         #         resource_label_value = Label(resource_window, text=f'{resource_value} gr', font=(FONT, 24, 'bold'), bg=BG_Softbrown, pady=15, padx=35)
         #     else:
@@ -125,7 +125,7 @@ class GuiEnvironment():
         resource_label_key_milk = Label(resource_window, text='Milk', font=(FONT, 24, 'bold'), bg=BG_Softbrown, padx=35, pady=15)
         resource_label_key_milk.grid(column=col_variation+2, row=row_key, columnspan=2)
 
-        resource_label_value_coffee = Label(resource_window, text=f'{available_resources["Coffee Beans"]} gr', font=(FONT, 24, 'bold'), bg=BG_Softbrown, pady=15, padx=35)
+        resource_label_value_coffee = Label(resource_window, text=f'{available_resources["Coffee"]} gr', font=(FONT, 24, 'bold'), bg=BG_Softbrown, pady=15, padx=35)
         resource_label_value_coffee.grid(column=col_variation+4, row=row_val, columnspan=2)
         resource_label_key_coffee = Label(resource_window, text='Coffee', font=(FONT, 24, 'bold'), bg=BG_Softbrown, padx=35, pady=15)
         resource_label_key_coffee.grid(column=col_variation+4, row=row_key, columnspan=2)
@@ -143,27 +143,27 @@ class GuiEnvironment():
 
             
         add_button_water = Button(resource_window, text='+', font=(FONT, 24, 'bold'), bg=green_button, command=lambda: add_refresh_label('Water', purchase_method.increments['Water'], resource_label_value_water))
-        decrease_button_water = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button)
+        decrease_button_water = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button, command=lambda: dec_refresh_label('Water', purchase_method.increments['Water'], resource_label_value_water))
         add_button_water.grid(row=button_resource_row, column=button_resource_col_add)
         decrease_button_water.grid(row=button_resource_row, column=button_resource_col_dec)
 
         add_button_milk = Button(resource_window, text='+', font=(FONT, 24, 'bold'), bg=green_button, command=lambda: add_refresh_label('Milk', purchase_method.increments['Milk'], resource_label_value_milk))
-        decrease_button_milk = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button)
+        decrease_button_milk = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button, command=lambda: dec_refresh_label('Milk', purchase_method.increments['Milk'], resource_label_value_milk))
         add_button_milk.grid(row=button_resource_row, column=button_resource_col_add+2)
         decrease_button_milk.grid(row=button_resource_row, column=button_resource_col_dec+2)
 
-        add_button_coffee = Button(resource_window, text='+', font=(FONT, 24, 'bold'), bg=green_button, command=lambda: add_refresh_label('Coffee Beans', purchase_method.increments['Coffee Beans'], resource_label_value_coffee))
-        decrease_button_coffee = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button)
+        add_button_coffee = Button(resource_window, text='+', font=(FONT, 24, 'bold'), bg=green_button, command=lambda: add_refresh_label('Coffee', purchase_method.increments['Coffee'], resource_label_value_coffee))
+        decrease_button_coffee = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button, command=lambda: dec_refresh_label('Coffee', purchase_method.increments['Coffee'], resource_label_value_coffee))
         add_button_coffee.grid(row=button_resource_row, column=button_resource_col_add+4)
         decrease_button_coffee.grid(row=button_resource_row, column=button_resource_col_dec+4)
 
         add_button_cocoa = Button(resource_window, text='+', font=(FONT, 24, 'bold'), bg=green_button, command=lambda: add_refresh_label('Cocoa', purchase_method.increments['Cocoa'], resource_label_value_cocoa))
-        decrease_button_cocoa = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button)
+        decrease_button_cocoa = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button, command=lambda: dec_refresh_label('Cocoa', purchase_method.increments['Cocoa'], resource_label_value_cocoa))
         add_button_cocoa.grid(row=button_resource_row, column=button_resource_col_add+6)
         decrease_button_cocoa.grid(row=button_resource_row, column=button_resource_col_dec+6)
 
         add_button_cash = Button(resource_window, text='+', font=(FONT, 24, 'bold'), bg=green_button, command=lambda: add_refresh_label('Cash', purchase_method.increments['Cash'], resource_label_value_cash))
-        decrease_button_cash = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button)
+        decrease_button_cash = Button(resource_window, text='-', font=(FONT, 24, 'bold'), bg=red_button, command=lambda: dec_refresh_label('Cash', purchase_method.increments['Cash'], resource_label_value_cash))
         add_button_cash.grid(row=button_resource_row, column=button_resource_col_add+8)
         decrease_button_cash.grid(row=button_resource_row, column=button_resource_col_dec+8)
         
@@ -179,6 +179,15 @@ class GuiEnvironment():
             else:
                 label_item.config(text=f'${new_qty_resources[resource]}')
 
+        def dec_refresh_label(resource, qty, label_item):
+            purchase_method.dec_resource(resource, qty)
+            new_qty_resources = purchase_method.view_resources()
+            if resource == 'Coffee' or resource == 'Cocoa':
+                label_item.config(text=f'{new_qty_resources[resource]} gr')
+            elif resource == 'Water' or resource == 'Milk':
+                label_item.config(text=f'{new_qty_resources[resource]} ml')
+            else:
+                label_item.config(text=f'${new_qty_resources[resource]}')
 
 
         

@@ -1,16 +1,18 @@
 import datetime
 import json
 import os
+from re import T
+from tkinter import messagebox
 
 class Resources():
 
     def __init__(self):
-        self.coffee = {'Price': 2.50, 'Water': 5, 'Milk': 0, 'Coffee Beans': 15}
-        self.flat_wite = {'Price': 3.25, 'Water': 2.5, 'Milk': 2.5, 'Coffee Beans': 15}
-        self.cappucino = {'Price': 3.00, 'Water': 3.0, 'Milk': 2.0, 'Coffee Beans': 15}
-        self.moccacino = {'Price': 3.50, 'Water': 3.0, 'Milk': 2.0, 'Coffee Beans': 7.5, 'Cocoa': 7.5}
+        self.coffee = {'Price': 2.50, 'Water': 5, 'Milk': 0, 'Coffee': 15}
+        self.flat_wite = {'Price': 3.25, 'Water': 2.5, 'Milk': 2.5, 'Coffee': 15}
+        self.cappucino = {'Price': 3.00, 'Water': 3.0, 'Milk': 2.0, 'Coffee': 15}
+        self.moccacino = {'Price': 3.50, 'Water': 3.0, 'Milk': 2.0, 'Coffee': 7.5, 'Cocoa': 7.5}
         self.items_machine = {'Coffee':self.coffee['Price'], 'Flat White': self.flat_wite['Price'], 'Cappucino': self.cappucino['Price'], 'Moccacino': self.moccacino['Price']}
-        self.resources = {'Water': 0, 'Milk': 0, 'Coffee Beans': 0, 'Cocoa': 0, 'Cash': 0}
+        self.resources = {'Water': 0, 'Milk': 0, 'Coffee': 0, 'Cocoa': 0, 'Cash': 0}
         self.increments = {k: v for k, v in self.resources.items()}
         self.res_limit = {k: v for k, v in self.resources.items()}
         self.cash = 0
@@ -41,9 +43,13 @@ class Resources():
 
     def add_resource(self, resource, qty):
         data_resources = self.view_resources()
-        data_resources[resource] += qty
-        with open('resource.json', 'w') as jsonfile:
-            json.dump(data_resources, jsonfile)
+        if data_resources[resource] < self.res_limit[resource]:
+            data_resources[resource] += qty
+            with open('resource.json', 'w') as jsonfile:
+                json.dump(data_resources, jsonfile)
+        else:
+            messagebox.showwarning(title='Resource Limit Reached', message=f'Capacity for {resource} is full')
+            
 
         
 
@@ -51,22 +57,25 @@ class Resources():
         for k in self.increments.keys():
             if k == 'Water' or k =='Milk':
                 self.increments[k] = 10
-            elif k == 'Coffee Beans' or k == 'Cocoa':
+                self.res_limit[k] = 20
+            elif k == 'Coffee' or k == 'Cocoa':
                 self.increments[k] = 5
+                self.res_limit[k] = 20
             else:
                 self.increments[k] = 10
-        for k in self.increments.keys():
-            if k == 'Water' or k =='Milk':
-                self.increments[k] = 20
-            elif k == 'Coffee Beans' or k == 'Cocoa':
-                self.increments[k] = 30
-            else:
-                self.increments[k] = 100        
+                self.res_limit[k] = 100
+     
         
 
     
-    def dec_resource(self, resource):
-        pass
+    def dec_resource(self, resource, qty):
+        data_resources = self.view_resources()
+        if data_resources[resource] > 0:
+            data_resources[resource] -= qty
+            with open('resource.json', 'w') as jsonfile:
+                json.dump(data_resources, jsonfile)
+        else:
+            messagebox.showwarning(title='Resource unavailable', message=f'{resource} is empty, cannot remove more.')
 
 
 
