@@ -89,6 +89,7 @@ class GuiEnvironment():
 
     def resource_screen(self):
         available_resources = purchase_method.view_resources()
+
         resource_window = Toplevel(self.window, bg=BG_Softbrown, padx=25, pady=25)
         resource_window.title('Resources')
         resource_window.geometry('1000x400')
@@ -209,21 +210,38 @@ class GuiEnvironment():
 
         def purchase_product(product_item, item_price):
             input_value = text_purchase_window.get("1.0", "end-1c")
-            is_digit = check_amount(input_value)
-            if is_digit:
-                if float(input_value) < 0:
-                    showwarning('Invalid input', message='Invalid input')
-                elif float(input_value) < item_price:
-                    showwarning('Insufficient cash', message=f'The amount deposited is not enough. You are short by ${item_price - float(input_value)}')
-                else:
-                    purchase_method.add_to_bought(product_item)
-                    if float(input_value) == item_price:
-                        showinfo('Thank you', message=f'Thank you for your purchase, enjoy your {product_item}. :)')
+            check_res_result = purchase_method.check_res_available_prod(product_item)
+            avail_cash = purchase_method.view_resources()['Cash']
+            if not check_res_result:
+                
+                is_digit = check_amount(input_value)
+                if is_digit:
+                    if float(input_value) < 0:
+                        showwarning('Invalid input', message='Invalid input')
+                    elif float(input_value) < item_price:
+                        showwarning('Insufficient cash', message=f'The amount deposited is not enough. You are short by ${item_price - float(input_value)}')
                     else:
-                        showinfo('Thank you', message=f'Thank you for your purchase, enjoy your {product_item}.\nYour change is ${float(input_value) - item_price}.\n:)')
-                    exit_screen()
+                        if float(input_value) > item_price and avail_cash < float(input_value) - item_price:
+                            showwarning('Insufficient cash for change', message=f'There is not enough cash to give change. Please provide the exact price: {item_price}')
+                        else:
+                            purchase_method.add_to_bought(product_item)
+                            for k, v in purchase_method.requirements[product_item].items():
+                                if k != 'Price':
+                                    purchase_method.dec_resource(k, v)
+                                else:
+                                    purchase_method.add_resource('Cash', float(input_value))
+                                    purchase_method.dec_resource('Cash', float(input_value)-item_price)
+                            if float(input_value) == item_price:
+                                showinfo('Thank you', message=f'Thank you for your purchase, enjoy your {product_item}. :)')
+                            else:
+                                showinfo('Thank you', message=f'Thank you for your purchase, enjoy your {product_item}.\nYour change is ${float(input_value) - item_price}.\n:)')
+                            exit_screen()
+                else:
+                    showwarning('Invalid input' , message='Please put amount required for purchase')
             else:
-                showwarning('Invalid input' , message='Please put amount required for purchase')
+                for result_check in check_res_result:
+                    showwarning(title='Resource insufficient', message=result_check)
+            
 
         purchase_button = Button(purchase_window, text='Buy', bg=green_button, highlightthickness=0, command= lambda: purchase_product(product_item, item_price), height=2, width=10, relief='flat', borderwidth=5)
         exit_button = Button(purchase_window, text='Cancel', bg=red_button, highlightthickness=0, command=exit_screen, height=2, width=10, relief='flat', borderwidth=5)

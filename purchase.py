@@ -7,10 +7,16 @@ from tkinter import messagebox
 class Resources():
 
     def __init__(self):
-        self.coffee = {'Price': 2.50, 'Water': 5, 'Milk': 0, 'Coffee': 15}
+        self.coffee = {'Price': 2.50, 'Water': 5, 'Coffee': 15}
         self.flat_wite = {'Price': 3.25, 'Water': 2.5, 'Milk': 2.5, 'Coffee': 15}
         self.cappucino = {'Price': 3.00, 'Water': 3.0, 'Milk': 2.0, 'Coffee': 15}
         self.moccacino = {'Price': 3.50, 'Water': 3.0, 'Milk': 2.0, 'Coffee': 7.5, 'Cocoa': 7.5}
+        self.requirements = {
+            'Coffee':self.coffee, 
+            'Flat White': self.flat_wite, 
+            'Cappucino': self.cappucino, 
+            'Moccacino':self.moccacino
+            }
         self.items_machine = {'Coffee':self.coffee['Price'], 'Flat White': self.flat_wite['Price'], 'Cappucino': self.cappucino['Price'], 'Moccacino': self.moccacino['Price']}
         self.resources = {'Water': 0, 'Milk': 0, 'Coffee': 0, 'Cocoa': 0, 'Cash': 0}
         self.increments = {k: v for k, v in self.resources.items()}
@@ -59,11 +65,11 @@ class Resources():
                 self.increments[k] = 10
                 self.res_limit[k] = 20
             elif k == 'Coffee' or k == 'Cocoa':
-                self.increments[k] = 5
-                self.res_limit[k] = 20
-            else:
                 self.increments[k] = 10
-                self.res_limit[k] = 100
+                self.res_limit[k] = 50
+            else:
+                self.increments[k] = 25
+                self.res_limit[k] = 999999999
      
         
 
@@ -76,6 +82,17 @@ class Resources():
                 json.dump(data_resources, jsonfile)
         else:
             messagebox.showwarning(title='Resource unavailable', message=f'{resource} is empty, cannot remove more.')
+
+
+    def check_res_available_prod(self, resource):
+        avail_resources = self.view_resources()
+        req_resource = self.requirements[resource]
+        result_check_list = []
+        for k, v in req_resource.items():
+            if k != 'Price':
+                if v > avail_resources[k]:
+                    result_check_list.append(f'Low on {k}')
+        return result_check_list
 
 
 
